@@ -1,0 +1,85 @@
+<style>
+  .text-fields {
+    display: flex;
+  }
+
+  .text-fields .input {
+    width: 49%;
+  }
+
+  .text-fields .output {
+    margin-left: 10px;
+    width: 49%;
+  }
+</style>
+
+<div class="text-fields">
+  <textarea class="input" name="input" rows="50"></textarea>
+
+  <textarea class="output" name="output" rows="50"></textarea>
+</div>
+
+
+
+
+
+
+
+<script>
+  let inputHtml = document.getElementById('inputHtml')
+  let input = document.getElementsByName('input')[0]
+  let output = document.getElementsByName('output')[0]
+  input.addEventListener('input', e => {
+    let inputValue = e.target.value;
+    let newHtml = document.createElement('html');
+    newHtml.innerHTML = inputValue;
+
+    if (isHTML(inputValue)) {
+      let ul = newHtml.querySelector('ul')
+      let li = ul.querySelectorAll('li')
+      let data = [];
+      for (item of li) {
+        const a = item.querySelector('a');
+        let obj = {}
+        if(a){
+          obj.href = a.getAttribute('href').split('pdf/')[1] || null;
+          obj.title = a.innerText
+        }
+        else{
+          obj.href = null
+          obj.title = null
+        }
+        obj.date = item.innerText.split('\n')[1] || null;
+        data.unshift(obj)
+      }
+      output.value = JSON.stringify(data)
+    }
+  })
+
+
+  function isHTML(str) {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(str, "application/xml");
+    let errorNode = doc.querySelector('parsererror');
+    if (errorNode) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+
+  /*
+    let ul = document.querySelector('ul')
+    let li = ul.querySelectorAll('li')
+    let data = [];
+    for (item of li) {
+      const a = item.querySelector('a');
+      let obj = {}
+      obj.href = a.getAttribute('href').split('pdf/')[1] || null;
+      obj.title = a.innerText
+      obj.date = item.innerText.split('\n')[1] || null;
+      data.unshift(obj)
+    }
+    console.log(JSON.stringify(data)) */
+</script>
